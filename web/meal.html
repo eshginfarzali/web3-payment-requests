@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yemək Kartı Laboratoriyası</title>
+</head>
+<body>
+<main class="wide">
+  <p class="nav"><a href="./">← Dərslər</a></p>
+  <div class="row between">
+    <div>
+      <h1>Dərs 2 · Yemək kartı tokeni (MEAL)</h1>
+      <p class="sub">Şirkət → işçi → restoran → bank. Hər addımı icra et və blokçeyndə nə baş verdiyinə bax.</p>
+    </div>
+    <button id="reset" class="danger">↺ Dərsi sıfırla</button>
+  </div>
+
+  <div id="offline" class="card warnbox" hidden>
+    <h2>Yerli blokçeyn işləmir</h2>
+    <p>Terminalda <code>npm run dev</code> işlət (və ya ayrı-ayrılıqda <code>npm run node</code> + <code>npm run web</code>),
+      sonra səhifəni yenilə.</p>
+  </div>
+
+  <div class="lab">
+    <div class="col">
+      <section class="card">
+        <ol id="steps" class="steps"></ol>
+      </section>
+      <section class="card" id="stepCard"></section>
+
+      <section class="card">
+        <h2>🧪 Qaydaları sına</h2>
+        <p class="muted small">İstənilən iştirakçının adından istənilən əməliyyatı göndər və kontraktın nə dediyinə bax.
+          Məsələn: Aysel Murada <code>transfer</code> etsin, Kənar şəxs <code>redeem</code> etsin, Restoran <code>load</code> etsin.</p>
+        <div class="row">
+          <label>Kim imzalayır <select id="cSigner"></select></label>
+          <label>Əməliyyat <select id="cAction"></select></label>
+        </div>
+        <div class="row">
+          <label id="cTargetWrap">Kimə / kimi <select id="cTarget"></select></label>
+          <label id="cAmountWrap" class="narrow">Məbləğ (MEAL) <input id="cAmount" type="number" min="0" step="0.01" value="50"></label>
+          <button id="cRun" disabled>Göndər</button>
+        </div>
+        <div id="cOut"></div>
+      </section>
+    </div>
+
+    <aside class="col">
+      <section class="card">
+        <h2>📒 Dəftər (zəncirdən oxunur)</h2>
+        <div id="ledger"><p class="muted">Yüklənir…</p></div>
+      </section>
+      <section class="card">
+        <div class="row between"><h2>⛓ Blok zənciri</h2><span id="height" class="muted small"></span></div>
+        <p class="muted small">Hər blok əvvəlkinin hash-ini daşıyır. Köhnə bloku dəyişsən, hash-i dəyişər
+          və ondan sonrakı bütün “əvvəlki” bağlantıları qırılar.</p>
+        <div id="chain"></div>
+      </section>
+    </aside>
+  </div>
+</main>
+<script type="module" src="/src/meal/main.ts"></script>
+</body>
+</html>

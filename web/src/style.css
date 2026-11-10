@@ -43,3 +43,5 @@ tr.mine td:first-child { box-shadow: inset 3px 0 var(--accent); }
 #log { max-height: 240px; overflow: auto; margin: 0; white-space: pre-wrap; }
 .err { color: var(--err); }
 .tablewrap { overflow-x: auto; }
+.nav { margin: 0 0 8px; font-size: 14px; }
+.nav a, a { color: var(--accent); }

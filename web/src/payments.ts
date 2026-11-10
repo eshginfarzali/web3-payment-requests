@@ -17,6 +17,7 @@ import {
   type PaymentRequests,
 } from "../../typechain-types";
 import deploymentsJson from "./deployments.json";
+import { LOCAL_RPC_FOR_WALLET, LOCAL_RPC_URL } from "./shared/rpc";
 
 // ---------- types & config ----------
 
@@ -30,7 +31,6 @@ declare global {
   interface Window { ethereum?: InjectedWallet }
 }
 
-const LOCAL_RPC = "http://127.0.0.1:8545";
 const CHAINS: Record<string, { name: string; hex: string; add?: object }> = {
   "31337": {
     name: "Hardhat Localhost",
@@ -38,7 +38,7 @@ const CHAINS: Record<string, { name: string; hex: string; add?: object }> = {
     add: {
       chainId: "0x7a69",
       chainName: "Hardhat Localhost",
-      rpcUrls: [LOCAL_RPC],
+      rpcUrls: [LOCAL_RPC_FOR_WALLET],
       nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     },
   },
@@ -120,7 +120,7 @@ async function connect() {
 }
 
 async function connectLocal() {
-  localProvider ??= new JsonRpcProvider(LOCAL_RPC);
+  localProvider ??= new JsonRpcProvider(LOCAL_RPC_URL);
   const accounts = (await localProvider.listAccounts()).slice(0, 5).map((s) => s.address);
 
   const select = $<HTMLSelectElement>("account");
@@ -154,7 +154,7 @@ async function connectMetaMask(requestAccess: boolean) {
 
 async function localAccounts(): Promise<string[]> {
   try {
-    localProvider ??= new JsonRpcProvider(LOCAL_RPC);
+    localProvider ??= new JsonRpcProvider(LOCAL_RPC_URL);
     return (await localProvider.listAccounts()).slice(0, 5).map((s) => s.address);
   } catch {
     return [];

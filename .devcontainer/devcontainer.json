@@ -1,0 +1,11 @@
+{
+  "name": "web3-payment-lab",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+  "postCreateCommand": "npm ci && npx hardhat compile",
+  "postAttachCommand": "npm run dev",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": { "label": "Web3 lab", "onAutoForward": "openBrowser" },
+    "8545": { "label": "Hardhat node", "onAutoForward": "silent" }
+  }
+}

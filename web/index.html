@@ -3,76 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ödəniş Sorğuları</title>
+<title>Web3 Laboratoriyası</title>
+<style>
+  .lessons { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .lesson { display: block; text-decoration: none; color: inherit; }
+  .lesson:hover { border-color: var(--accent); }
+  .lesson h2 { color: var(--accent); }
+  .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .concepts div { border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .concepts b { display: block; margin-bottom: 2px; }
+  .concepts p { margin: 0; color: var(--muted); font-size: 14px; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: .9em; }
+</style>
 </head>
 <body>
 <main>
-  <h1>Ödəniş sorğuları (demo)</h1>
-  <p class="sub">Test tokeni mUSD · yerli Hardhat və ya Sepolia test şəbəkəsi · real pul yoxdur</p>
+  <h1>Web3 laboratoriyası</h1>
+  <p class="sub">Blokçeyni ödəniş nümunələri üzərində, öz kompüterində və real pul olmadan öyrən.</p>
 
   <section class="card">
-    <h2>1. Bağlantı</h2>
-    <div class="row">
-      <label>Necə imzalayırsan
-        <select id="mode">
-          <option value="local">Yerli test hesabları (Hardhat node)</option>
-          <option value="metamask">MetaMask</option>
-        </select>
-      </label>
-      <label id="accountWrap">Aktiv hesab
-        <select id="account"></select>
-      </label>
-      <button id="connect" hidden>MetaMask qoş</button>
-    </div>
-    <div class="row info">
-      <div><div class="k">Şəbəkə</div><div id="network" class="v">—</div></div>
-      <div><div class="k">Ünvan</div><div id="me" class="v mono">—</div></div>
-      <div><div class="k">mUSD balansı</div><div id="balance" class="v big">—</div></div>
-      <button id="mint" class="secondary" disabled>+100 test mUSD al</button>
-    </div>
-    <div id="switch" class="row" hidden></div>
-  </section>
-
-  <section class="card">
-    <h2>2. Ödəniş sorğusu yarat (satıcı kimi)</h2>
-    <div class="row">
-      <label>Ödəyicinin ünvanı
-        <input id="payer" list="knownAccounts" placeholder="0x…" class="mono">
-        <datalist id="knownAccounts"></datalist>
-      </label>
-      <label class="narrow">Məbləğ (mUSD)
-        <input id="amount" type="number" min="0" step="any" value="25">
-      </label>
-    </div>
-    <div class="row">
-      <label>Qeyd / faktura nömrəsi
-        <input id="note" value="faktura-001">
-      </label>
-      <label>Son ödəmə tarixi (istəyə bağlı)
-        <input id="dueDate" type="datetime-local">
-      </label>
-      <button id="create" disabled>Sorğu yarat</button>
+    <h2>Blokçeyn 1 dəqiqədə</h2>
+    <div class="concepts">
+      <div><b>📒 Ortaq dəftər</b><p>Bank dəftəri əvəzinə minlərlə kompüterdə eyni dəftər saxlanılır. Hamı yoxlayır, heç kim tək başına dəyişə bilmir.</p></div>
+      <div><b>🧱 Blok və hash</b><p>Yazılar bloklara yığılır. Hər blok əvvəlkinin “barmaq izini” (hash) daşıyır, bu da keçmişi dəyişməyi mümkünsüz edir.</p></div>
+      <div><b>📜 Smart-kontrakt</b><p>Dəftərdə yaşayan proqramdır. Qaydaları kodda yazılıb, onu yazan şəxs də qaydaları keçə bilmir.</p></div>
+      <div><b>✍️ Tranzaksiya</b><p>Dəftərə yazmaq üçün sorğudur. Onu sahibin açarı imzalayır. Qayda pozulsa, rədd edilir və heç nə yazılmır.</p></div>
+      <div><b>🪙 Token</b><p>Kontraktın saxladığı “kimdə nə qədər var” cədvəlidir. Mint token yaradır, burn yandırır.</p></div>
+      <div><b>🌉 Off-chain</b><p>Bank köçürməsi, ad-soyad və QR zəncirdən kənardadır. Zəncir yalnız ona yazılanı bilir.</p></div>
     </div>
   </section>
 
-  <section class="card">
-    <div class="row between">
-      <h2>3. Sorğular</h2>
-      <button id="refresh" class="secondary">Yenilə</button>
-    </div>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th>#</th><th>Satıcı</th><th>Ödəyici</th><th>Məbləğ</th><th>Qeyd</th><th>Son tarix</th><th>Status</th><th></th></tr></thead>
-        <tbody id="requests"><tr><td colspan="8" class="sub">Qoşulmayıb</td></tr></tbody>
-      </table>
-    </div>
-  </section>
+  <div class="lessons">
+    <a class="card lesson" href="meal.html">
+      <h2>Dərs 2 · Yemək kartı tokeni →</h2>
+      <p><b>Buradan başla.</b> Şirkət işçilərinə aylıq yemək balansı yükləyir, işçi restoranda QR ilə ödəyir,
+        restoran tokeni pula çevirir. 12 addım: hər addımda real həyatda və blokçeyndə nə baş verdiyini,
+        canlı dəftəri və blok zəncirini görürsən. Sonda qaydaları özün sınaya bilərsən.</p>
+      <p class="sub" style="margin:0">Rollar: Emitent, Şirkət, İşçi, Restoran · mint/burn · kredit limiti · ay sonu</p>
+    </a>
+    <a class="card lesson" href="payments.html">
+      <h2>Dərs 1 · Ödəniş sorğuları →</h2>
+      <p>Satıcı faktura yaradır, ödəyici test tokeni ilə ödəyir. Burada ERC20-nin <code>approve</code> +
+        <code>transferFrom</code> nümunəsini, ləğv etməni, son ödəmə tarixini və MetaMask qoşulmasını öyrənirsən.</p>
+      <p class="sub" style="margin:0">Yerli şəbəkədə və ya Sepolia-da işləyir</p>
+    </a>
+  </div>
 
   <section class="card">
-    <h2>Jurnal</h2>
-    <pre id="log" class="mono"></pre>
+    <h2>Necə işə salmaq olar</h2>
+    <p>Terminalda bir əmr kifayətdir: <code>npm run dev</code>. Bu əmr yerli blokçeyni qaldırır, kontraktları
+      yerləşdirir və bu səhifəni açır. Qaydaların avtomatik yoxlanması üçün: <code>npm test</code>.</p>
   </section>
 </main>
-<script type="module" src="/src/main.ts"></script>
+<script type="module">import "/src/style.css";</script>
 </body>
 </html>

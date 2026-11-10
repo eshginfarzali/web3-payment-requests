@@ -1,0 +1,73 @@
+main.wide { max-width: 1280px; }
+.lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 16px; align-items: start; }
+@media (max-width: 980px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+.col { min-width: 0; }
+.small { font-size: 12px; }
+.muted { color: var(--muted); }
+code { font-family: ui-monospace, Menlo, monospace; font-size: .9em; background: var(--bg);
+       border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+/* steps list */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; }
+.steps button { width: 100%; text-align: left; background: transparent; color: var(--text); border: 1px solid var(--line);
+                font-weight: 500; font-size: 13px; display: flex; gap: 8px; align-items: center; padding: 6px 8px; }
+.steps .n { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+            font-size: 12px; font-weight: 700; border: 1px solid var(--line); }
+.steps .done .n { background: var(--ok); color: #fff; border-color: var(--ok); }
+.steps .current .n { background: var(--accent); color: #fff; border-color: var(--accent); }
+.steps .viewing button { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.steps button:disabled { opacity: .45; }
+
+/* step card */
+.stephead { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.stephead h2 { margin: 0; font-size: 18px; }
+.badge { font-size: 12px; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); border-radius: 99px; padding: 1px 8px; }
+.explain { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+@media (max-width: 640px) { .explain { grid-template-columns: 1fr; } }
+.explain p { margin: 4px 0 0; }
+.lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+.look { background: var(--bg); border-left: 3px solid var(--accent); padding: 8px 10px; border-radius: 6px; margin: 10px 0 0; }
+
+.qrbox { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px;
+         padding: 12px; border: 1px dashed var(--line); border-radius: 8px; }
+.qrbox pre { margin: 4px 0; white-space: pre-wrap; word-break: break-all; }
+
+/* results */
+.res { border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 8px 10px; margin-top: 8px; }
+.res.ok { border-left-color: var(--ok); }
+.res.blocked { border-left-color: var(--warn); }
+.res.failed { border-left-color: var(--err); }
+.rt { font-weight: 600; }
+.who { font-size: 12px; font-weight: 500; color: var(--muted); }
+.reason { color: var(--warn); margin-top: 2px; }
+.res.failed .reason { color: var(--err); }
+.kv { color: var(--muted); margin-top: 2px; }
+.events { margin: 6px 0 0; padding-left: 18px; }
+.events li { word-break: break-word; }
+
+/* ledger */
+.totals { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.totals > div { border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+.totals .hl { border-color: var(--accent); }
+.totals .k { font-size: 11px; }
+.totals .v { font-size: 16px; }
+table.ledger td, table.ledger th { white-space: normal; }
+.num { text-align: right; white-space: nowrap !important; }
+tr.unreg td { opacity: .55; }
+.role { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; border: 1px solid; }
+.role.company { color: var(--accent); } .role.employee { color: var(--ok); }
+.role.restaurant { color: var(--warn); } .role.outsider { color: var(--muted); }
+.tag.warn { color: var(--warn); }
+.tag.ok { color: var(--ok); }
+
+/* chain */
+.block { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.bh { display: flex; justify-content: space-between; gap: 8px; }
+.h { color: var(--accent); }
+.txs { margin: 6px 0 0; padding-left: 16px; font-size: 13px; }
+.txs li { word-break: break-word; margin-bottom: 4px; }
+.ev { color: var(--muted); font-size: 12px; }
+.link { font-size: 11px; text-align: center; padding: 3px 0; }
+.link.ok { color: var(--ok); } .link.bad { color: var(--err); }
+
+.warnbox { border-color: var(--warn); }

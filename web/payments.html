@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ödəniş Sorğuları</title>
+</head>
+<body>
+<main>
+  <p class="nav"><a href="./">← Dərslər</a></p>
+  <h1>Dərs 1 · Ödəniş sorğuları</h1>
+  <p class="sub">Test tokeni mUSD · yerli Hardhat və ya Sepolia test şəbəkəsi · real pul yoxdur</p>
+
+  <section class="card">
+    <h2>1. Bağlantı</h2>
+    <div class="row">
+      <label>Necə imzalayırsan
+        <select id="mode">
+          <option value="local">Yerli test hesabları (Hardhat node)</option>
+          <option value="metamask">MetaMask</option>
+        </select>
+      </label>
+      <label id="accountWrap">Aktiv hesab
+        <select id="account"></select>
+      </label>
+      <button id="connect" hidden>MetaMask qoş</button>
+    </div>
+    <div class="row info">
+      <div><div class="k">Şəbəkə</div><div id="network" class="v">—</div></div>
+      <div><div class="k">Ünvan</div><div id="me" class="v mono">—</div></div>
+      <div><div class="k">mUSD balansı</div><div id="balance" class="v big">—</div></div>
+      <button id="mint" class="secondary" disabled>+100 test mUSD al</button>
+    </div>
+    <div id="switch" class="row" hidden></div>
+  </section>
+
+  <section class="card">
+    <h2>2. Ödəniş sorğusu yarat (satıcı kimi)</h2>
+    <div class="row">
+      <label>Ödəyicinin ünvanı
+        <input id="payer" list="knownAccounts" placeholder="0x…" class="mono">
+        <datalist id="knownAccounts"></datalist>
+      </label>
+      <label class="narrow">Məbləğ (mUSD)
+        <input id="amount" type="number" min="0" step="any" value="25">
+      </label>
+    </div>
+    <div class="row">
+      <label>Qeyd / faktura nömrəsi
+        <input id="note" value="faktura-001">
+      </label>
+      <label>Son ödəmə tarixi (istəyə bağlı)
+        <input id="dueDate" type="datetime-local">
+      </label>
+      <button id="create" disabled>Sorğu yarat</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row between">
+      <h2>3. Sorğular</h2>
+      <button id="refresh" class="secondary">Yenilə</button>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Satıcı</th><th>Ödəyici</th><th>Məbləğ</th><th>Qeyd</th><th>Son tarix</th><th>Status</th><th></th></tr></thead>
+        <tbody id="requests"><tr><td colspan="8" class="sub">Qoşulmayıb</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Jurnal</h2>
+    <pre id="log" class="mono"></pre>
+  </section>
+</main>
+<script type="module" src="/src/payments.ts"></script>
+</body>
+</html>
