@@ -61,16 +61,50 @@ After restarting the node, MetaMask may show nonce errors: Settings → Advanced
 
 ## Deploy to Sepolia
 
-1. Create a **test-only** wallet in MetaMask and get Sepolia ETH from a faucet
-   (e.g. Google Cloud Web3 faucet or Alchemy's Sepolia faucet).
-2. Get an RPC URL (Alchemy, Infura, …).
-3. `cp .env.example .env` and fill it in. `.env` is git-ignored.
-4. Deploy, and optionally verify the source on Etherscan:
+Writing to a blockchain requires signing with a private key, so this step is done with your
+own test wallet.
 
-```sh
-npm run deploy:sepolia
-npm run verify:sepolia
-```
+1. **Create a test-only account in MetaMask.** Never use an account that holds real funds:
+   its private key will sit in a file on your machine.
+   - MetaMask → account menu → "Add account".
+   - Account details → "Show private key" → copy it (starts with `0x`).
+2. **Get free Sepolia ETH** for gas from a faucet, for example:
+   - Google Cloud Web3 faucet: https://cloud.google.com/application/web3/faucet/ethereum/sepolia
+   - Alchemy faucet: https://www.alchemy.com/faucets/ethereum-sepolia
+
+   About 0.05 Sepolia ETH is plenty for deploying both contracts.
+3. **Get a free RPC URL** (the node your deploy is sent through):
+   - Alchemy: https://dashboard.alchemy.com → create app → network "Ethereum Sepolia" → copy the HTTPS URL.
+   - or Infura: https://app.infura.io → API key → Sepolia endpoint.
+4. **Create `.env`** from the template and fill it in. `.env` is git-ignored, so it is never
+   pushed to GitHub:
+
+   ```sh
+   cp .env.example .env
+   ```
+
+   ```ini
+   SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/<your-key>
+   DEPLOYER_PRIVATE_KEY=0x<test-account-private-key>
+   ETHERSCAN_API_KEY=<optional, from etherscan.io → API keys>
+   ```
+
+5. **Deploy:**
+
+   ```sh
+   npm run deploy:sepolia
+   ```
+
+   The script prints the contract addresses and a Sepolia Etherscan link.
+6. **(Optional) Verify the source code on Etherscan**, so anyone can read the code running at
+   the address (needs `ETHERSCAN_API_KEY`):
+
+   ```sh
+   npm run verify:sepolia
+   ```
+
+If `npm run deploy:sepolia` says `HH100: Network sepolia doesn't exist`, `.env` is missing or
+`SEPOLIA_RPC_URL` / `DEPLOYER_PRIVATE_KEY` is empty.
 
 The Sepolia address is saved to `web/src/deployments.json`; commit it so others can use the
 same contract. In the page choose **MetaMask**, switch to Sepolia, and use
