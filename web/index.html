@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ödəniş Sorğuları</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #fff; --text: #1a1d23; --muted: #6b7280; --line: #e5e7eb;
+    --accent: #2563eb; --ok: #059669; --warn: #b45309; --err: #dc2626;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1115; --card: #181b21; --text: #e6e8eb; --muted: #9aa1ab; --line: #2a2e36;
+            --accent: #60a5fa; --ok: #34d399; --warn: #fbbf24; --err: #f87171; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+          padding: 16px; margin-bottom: 16px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); flex: 1; min-width: 160px; }
+  select, input, button { font: inherit; padding: 8px 10px; border-radius: 8px;
+          border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+  button { background: var(--accent); color: #fff; border: 0; cursor: pointer; font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  .mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+  .bal { font-size: 24px; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  .tag { padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+  .paid { color: var(--ok); border: 1px solid var(--ok); }
+  .open { color: var(--warn); border: 1px solid var(--warn); }
+  #log { max-height: 220px; overflow: auto; margin: 0; white-space: pre-wrap; }
+  .err { color: var(--err); }
+  .tablewrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ödəniş sorğuları (demo)</h1>
+  <p class="sub">Yerli Hardhat blokçeyni · test tokeni mUSD · real pul yoxdur</p>
+
+  <section class="card">
+    <h2>1. Hesab seç</h2>
+    <div class="row">
+      <label>Aktiv hesab (kimin adından işləyirsən)
+        <select id="account"></select>
+      </label>
+      <div>
+        <div class="sub" style="margin:0">mUSD balansı</div>
+        <div class="bal" id="balance">—</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Ödəniş sorğusu yarat (satıcı kimi)</h2>
+    <div class="row">
+      <label>Kimdən istəyirsən (ödəyici)
+        <select id="payer"></select>
+      </label>
+      <label>Məbləğ (mUSD)
+        <input id="amount" type="number" min="0" step="any" value="25">
+      </label>
+      <label>Qeyd / faktura nömrəsi
+        <input id="note" value="faktura-001">
+      </label>
+      <button id="create">Sorğu yarat</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. Sorğular</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Satıcı</th><th>Ödəyici</th><th>Məbləğ</th><th>Qeyd</th><th>Status</th><th></th></tr></thead>
+        <tbody id="requests"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Jurnal</h2>
+    <pre id="log" class="mono"></pre>
+  </section>
+</main>
+
+<script src="/ethers.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
+const log = (msg, isErr) => {
+  const line = document.createElement("div");
+  if (isErr) line.className = "err";
+  line.textContent = new Date().toLocaleTimeString() + "  " + msg;
+  $("log").prepend(line);
+};
+
+// referenceHash only stores a hash on-chain; keep the readable note locally so the table can show it.
+const notes = (() => { try { return JSON.parse(localStorage.getItem("notes") || "{}"); } catch { return {}; } })();
+const saveNote = (hash, text) => { notes[hash] = text; try { localStorage.setItem("notes", JSON.stringify(notes)); } catch {} };
+
+let provider, accounts, cfg, token, pr;
+
+async function signer() { return provider.getSigner($("account").value); }
+
+async function init() {
+  cfg = await (await fetch("/config.json")).json();
+  provider = new ethers.JsonRpcProvider(cfg.rpcUrl);
+  accounts = (await provider.listAccounts()).slice(0, 5).map((s) => s.address);
+  token = new ethers.Contract(cfg.mockUSD.address, cfg.mockUSD.abi, provider);
+  pr = new ethers.Contract(cfg.paymentRequests.address, cfg.paymentRequests.abi, provider);
+
+  const opts = accounts.map((a, i) => `<option value="${a}">Hesab ${i} · ${short(a)}</option>`).join("");
+  $("account").innerHTML = opts;
+  $("payer").innerHTML = opts;
+  $("payer").selectedIndex = 1;
+  $("account").onchange = refresh;
+  $("create").onclick = createRequest;
+  log("Qoşuldu: " + cfg.rpcUrl);
+  log("PaymentRequests: " + cfg.paymentRequests.address);
+  await refresh();
+}
+
+const label = (addr) => { const i = accounts.indexOf(addr); return i >= 0 ? `Hesab ${i}` : short(addr); };
+
+async function refresh() {
+  const me = $("account").value;
+  $("balance").textContent = ethers.formatUnits(await token.balanceOf(me), 18);
+
+  const count = Number(await pr.nextRequestId());
+  const rows = [];
+  for (let id = count - 1; id >= 0; id--) {
+    const r = await pr.requests(id);
+    const canPay = !r.paid && r.payer === me;
+    rows.push(`<tr>
+      <td>${id}</td>
+      <td>${label(r.creator)}</td>
+      <td>${label(r.payer)}</td>
+      <td>${ethers.formatUnits(r.amount, 18)}</td>
+      <td class="mono">${notes[r.referenceHash] ? escapeHtml(notes[r.referenceHash]) : short(r.referenceHash)}</td>
+      <td><span class="tag ${r.paid ? "paid" : "open"}">${r.paid ? "Ödənilib" : "Gözləyir"}</span></td>
+      <td>${canPay ? `<button data-pay="${id}">Ödə</button>` : ""}</td>
+    </tr>`);
+  }
+  $("requests").innerHTML = rows.join("") || `<tr><td colspan="7" class="sub">Hələ sorğu yoxdur</td></tr>`;
+  document.querySelectorAll("[data-pay]").forEach((b) => (b.onclick = () => pay(Number(b.dataset.pay), b)));
+}
+
+function escapeHtml(s) { return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]); }
+
+async function createRequest() {
+  const btn = $("create");
+  btn.disabled = true;
+  try {
+    const s = await signer();
+    const amount = ethers.parseUnits($("amount").value || "0", 18);
+    const note = $("note").value;
+    const hash = ethers.id(note);
+    saveNote(hash, note);
+    log(`createRequest: ${label(s.address)} → ${label($("payer").value)}, ${$("amount").value} mUSD`);
+    const tx = await pr.connect(s).createRequest($("payer").value, cfg.mockUSD.address, amount, hash);
+    const rc = await tx.wait();
+    log(`✓ Sorğu yaradıldı (blok ${rc.blockNumber}, tx ${short(tx.hash)})`);
+    await refresh();
+  } catch (e) {
+    log("✗ " + (e.reason || e.shortMessage || e.message), true);
+  } finally { btn.disabled = false; }
+}
+
+async function pay(id, btn) {
+  btn.disabled = true;
+  try {
+    const s = await signer();
+    const r = await pr.requests(id);
+    log(`approve: ${label(s.address)} PaymentRequests-ə ${ethers.formatUnits(r.amount, 18)} mUSD xərcləmə icazəsi verir`);
+    await (await token.connect(s).approve(cfg.paymentRequests.address, r.amount)).wait();
+    log(`payRequest(${id})`);
+    const tx = await pr.connect(s).payRequest(id);
+    const rc = await tx.wait();
+    log(`✓ Ödənildi (blok ${rc.blockNumber}, tx ${short(tx.hash)})`);
+    await refresh();
+  } catch (e) {
+    log("✗ " + (e.reason || e.shortMessage || e.message), true);
+    btn.disabled = false;
+  }
+}
+
+init().catch((e) => log("Başlamaq alınmadı: " + e.message + " — npm run node və npm run deploy:node işləyir?", true));
+</script>
+</body>
+</html>
